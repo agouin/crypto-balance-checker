@@ -1,0 +1,8 @@
+{
+    "DB_CONNECTION": {
+        "host": "db",
+        "user": "crypto",
+        "password": "b@l@nc3_ch3ck3r",
+        "database": "balances"
+    }
+}

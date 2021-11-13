@@ -1,0 +1,52 @@
+version: '3'
+services:
+  cbc:
+    build: .
+    environment:
+      - PORT=3025
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_ENV=development
+    ports:
+      - "3025:3025"
+    volumes:
+      - ./components:/code/components
+      - ./lib:/code/lib
+      - ./styles:/code/styles
+      - ./routers:/code/routers
+      - ./config:/code/config
+      - ./pages:/code/pages
+      - ./public:/code/public
+      - ./db:/code/db
+      - ./jobs:/code/jobs
+      - ./index.js:/code/index.js
+      - ./next-env.d.ts:/code/next-env.d.ts
+      - ./tsconfig.json:/code/tsconfig.json
+      - ./package.json:/code/package.json
+      - ./tmp:/code/tmp
+  db:
+    image: "postgres:13-alpine"
+    #command: ["postgres", "-c", "log_statement=all"] # logs all SQL queries
+    environment:
+      - POSTGRES_DB=balances
+      - POSTGRES_USER=crypto
+      - POSTGRES_PASSWORD=b@l@nc3_ch3ck3r
+    volumes:
+      - db:/var/lib/postgresql/data
+  pgAdmin:
+    image: "dpage/pgadmin4"
+    environment:
+      - PGADMIN_LISTEN_PORT=3026
+      - PGADMIN_DEFAULT_EMAIL=admin
+      - PGADMIN_DEFAULT_PASSWORD=password
+    ports:
+      - "3026:3026"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    logging:
+      driver: none
+
+volumes:
+  db:
+    driver: local
+  pgadmin:
+    driver: local
