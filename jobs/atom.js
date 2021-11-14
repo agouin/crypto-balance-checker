@@ -1,7 +1,9 @@
 const runWithPuppeteer = require('./common')
 //const fs = require('fs')
-const path = require('path')
+//const path = require('path')
 const Coin = require('../db/model/Coin')
+const { Coins } = require('../lib/coins')
+const coinMarketCap = require('./coin_market_cap')
 
 //const tmpPath = path.join(__dirname, '..', 'tmp')
 
@@ -59,6 +61,10 @@ const updateBalance = async (address) => {
           await Coin.query()
             .update({ balance, exchange_rate_usd, updated_at: new Date() })
             .where({ name: normalizedName, address })
+        }
+
+        if (Coins[normalizedName] && Coins[normalizedName].coinMarketCapName) {
+          await coinMarketCap(Coins[normalizedName].coinMarketCapName, normalizedName)
         }
 
         console.log('updated balance', { name: normalizedName, balance, exchange_rate_usd })

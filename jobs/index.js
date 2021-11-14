@@ -44,6 +44,7 @@ const scrapeWallet = async (name, address, addToCoinMarketCapJobs) => {
 
   switch (name) {
     case 'cosmos':
+      await handleCoinMarketCapCoin(name)
       try {
         await cosmos(address)
       } catch (err) {
@@ -51,6 +52,7 @@ const scrapeWallet = async (name, address, addToCoinMarketCapJobs) => {
       }
       break
     case 'osmosis':
+      await handleCoinMarketCapCoin(name)
       try {
         await osmosis(address)
       } catch (err) {
@@ -58,6 +60,7 @@ const scrapeWallet = async (name, address, addToCoinMarketCapJobs) => {
       }
       break
     case 'ethereum':
+      await handleCoinMarketCapCoin(name)
       try {
         await eth(address)
       } catch (err) {

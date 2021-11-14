@@ -311,8 +311,44 @@ const IndexPage = ({
       },
       render: (rate) => {
         if (rate === null) return 'Unknown'
-        return '$' + (rate < 1 ? rate.toPrecision(4) : rate.toFixed(2))
+        return (
+          <>
+            <span>
+              {'$' + (rate < 1 ? rate.toPrecision(4) : rate.toFixed(2))}
+            </span>
+          </>
+        )
       },
+    },
+    {
+      key: 'last_day_percentage',
+      dataIndex: 'last_day_percentage',
+      title: 'Last Day',
+      width: 100,
+      sorter: (a, b) => {
+        const lastA =
+          a.last_day_percentage == null || isNaN(a.last_day_percentage)
+            ? 0
+            : a.last_day_percentage
+        const lastB =
+          b.last_day_percentage == null || isNaN(b.last_day_percentage)
+            ? 0
+            : b.last_day_percentage
+        return lastA - lastB
+      },
+      render: (lastDay) => (
+        <>
+          {lastDay != null && (
+            <span
+              className={
+                lastDay < 0 ? classes.negativeTrend : classes.positiveTrend
+              }>
+              {lastDay > 0 && '+'}
+              {lastDay.toFixed(2)}%
+            </span>
+          )}
+        </>
+      ),
     },
     {
       key: 'balance',
@@ -398,7 +434,7 @@ const IndexPage = ({
           <Table
             className={classes.balances_table}
             rowKey="id"
-            scroll={{x: true}}
+            scroll={{ x: true }}
             columns={CryptoColumns}
             dataSource={balances}
             pagination={false}
