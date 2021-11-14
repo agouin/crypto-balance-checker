@@ -21,7 +21,6 @@
 
 .balances_table {
   margin-top: 16px;
-  min-width: 1000px;
 }
 
 .refresh_button {
@@ -64,7 +63,6 @@
 .inner {
   padding: 16px;
   flex: 0 1 1500px;
-  min-width: 1000px;
 }
 
 .totals {
@@ -105,6 +103,7 @@
   position: absolute;
   margin-bottom: 4px;
   margin-right: 4px;
+  margin-left: 4px;
 }
 
 

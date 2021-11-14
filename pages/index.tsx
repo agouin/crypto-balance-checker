@@ -4,7 +4,6 @@ import {
   RedoOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  CopyOutlined,
   LinkOutlined,
   DeleteOutlined,
   EditOutlined,
@@ -19,13 +18,13 @@ import { getValue } from '../lib/utils'
 import { io } from 'socket.io-client'
 
 const PoweredBy = [
-  { name: 'CoinMarketCap', href: 'https://coinmarketcap.com'},
+  { name: 'CoinMarketCap', href: 'https://coinmarketcap.com' },
   { name: 'Mintscan', href: 'https://mintscan.io' },
   { name: 'Blockchair', href: 'https://blockchair.com' },
-  { name: 'Etherscan', href: 'https://etherscan.io'},
-  { name: 'Cardanoscan', href: 'https://cardanoscan.io'},
-  { name: 'AlgoExplorer', href: 'https://algoexplorer.io'},
-  { name: 'nem', href: 'https://explorer.nemtool.com'}
+  { name: 'Etherscan', href: 'https://etherscan.io' },
+  { name: 'Cardanoscan', href: 'https://cardanoscan.io' },
+  { name: 'AlgoExplorer', href: 'https://algoexplorer.io' },
+  { name: 'nem', href: 'https://explorer.nemtool.com' },
 ]
 
 const timeDifference = (current, previous) => {
@@ -69,28 +68,28 @@ const fallbackCopyTextToClipboard = (text) => {
     var successful = document.execCommand('copy')
     var msg = successful ? 'successful' : 'unsuccessful'
     console.log('Fallback: Copying text command was ' + msg)
+    message.success('Copied to clipboard')
   } catch (err) {
+    message.error('Error copying to clipboard')
     console.error('Fallback: Oops, unable to copy', err)
   }
 
   document.body.removeChild(textArea)
 }
 
-const copyTextToClipboard = (text) => {
+const copyTextToClipboard = async (text) => {
   if (!navigator.clipboard) {
     fallbackCopyTextToClipboard(text)
     return
   }
-  navigator.clipboard.writeText(text).then(
-    function () {
-      console.log('Async: Copying to clipboard was successful!')
-      message.success('Copied to clipboard')
-    },
-    function (err) {
-      message.error('Error copying to clipboard')
-      console.error('Async: Could not copy text: ', err)
-    }
-  )
+  try {
+    await navigator.clipboard.writeText(text)
+    console.log('Async: Copying to clipboard was successful!')
+    message.success('Copied to clipboard')
+  } catch (err) {
+    message.error('Error copying to clipboard')
+    console.error('Async: Could not copy text: ', err)
+  }
 }
 
 const getCopyAndNav = (record) => {
@@ -197,16 +196,16 @@ interface Balance {
   updated_at: Date
 }
 
-const AlphabeticalSort = getField => (a,b) => {
+const AlphabeticalSort = (getField) => (a, b) => {
   const fieldA = getField(a)
   const fieldB = getField(b)
   if (fieldA < fieldB) {
-    return -1;
+    return -1
   }
   if (fieldA > fieldB) {
-    return 1;
+    return 1
   }
-  return 0;
+  return 0
 }
 
 const IndexPage = ({
@@ -257,6 +256,7 @@ const IndexPage = ({
     {
       key: 'name',
       dataIndex: 'name',
+      width: 320,
       title: 'Cryptocurrency',
       sorter: AlphabeticalSort((record) => {
         if (Coins[record.name]) return Coins[record.name].label
@@ -287,8 +287,8 @@ const IndexPage = ({
       key: 'value_usd',
       dataIndex: 'value_usd',
       title: 'Value (USD)',
-      sorter: (a, b) =>
-        getValue(a) - getValue(b),
+      width: 180,
+      sorter: (a, b) => getValue(a) - getValue(b),
       render: (_, record) => {
         return '$' + (record.balance * record.exchange_rate_usd).toFixed(2)
       },
@@ -296,10 +296,17 @@ const IndexPage = ({
     {
       key: 'exchange_rate_usd',
       dataIndex: 'exchange_rate_usd',
+      width: 180,
       title: 'Exchange Rate (USD)',
       sorter: (a, b) => {
-        const exchA = a.exchange_rate_usd == null || isNaN(a.exchange_rate_usd) ? 0 : a.exchange_rate_usd
-        const exchB = b.exchange_rate_usd == null || isNaN(b.exchange_rate_usd) ? 0 : b.exchange_rate_usd
+        const exchA =
+          a.exchange_rate_usd == null || isNaN(a.exchange_rate_usd)
+            ? 0
+            : a.exchange_rate_usd
+        const exchB =
+          b.exchange_rate_usd == null || isNaN(b.exchange_rate_usd)
+            ? 0
+            : b.exchange_rate_usd
         return exchA - exchB
       },
       render: (rate) => {
@@ -310,6 +317,7 @@ const IndexPage = ({
     {
       key: 'balance',
       dataIndex: 'balance',
+      width: 180,
       title: 'Balance',
       sorter: (a, b) => a.balance - b.balance,
       render: (text, record) => {
@@ -330,8 +338,10 @@ const IndexPage = ({
     {
       key: 'updated_at',
       dataIndex: 'updated_at',
+      width: 180,
       title: 'Last Updated',
-      sorter: (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      sorter: (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
       render: (date) => timeDifference(Date.now(), new Date(date).getTime()),
     },
   ]
@@ -373,14 +383,12 @@ const IndexPage = ({
             <Popconfirm
               onConfirm={handleDelete}
               title={`Are you sure you wish to delete the balance checks for ${toAndString(
-                selectedRowKeys.map(
-                  (id) => {
-                    const balance = balances.find((balance) => balance.id === id)
-                    if (!balance) return ''
-                    if (Coins[balance.name]) return Coins[balance.name].label
-                    return balance.name                   
-                  }
-                )
+                selectedRowKeys.map((id) => {
+                  const balance = balances.find((balance) => balance.id === id)
+                  if (!balance) return ''
+                  if (Coins[balance.name]) return Coins[balance.name].label
+                  return balance.name
+                })
               )}?`}>
               <Button className={classes.refresh_button} type="primary" danger>
                 <DeleteOutlined />
@@ -390,6 +398,7 @@ const IndexPage = ({
           <Table
             className={classes.balances_table}
             rowKey="id"
+            scroll={{x: true}}
             columns={CryptoColumns}
             dataSource={balances}
             pagination={false}
@@ -404,7 +413,21 @@ const IndexPage = ({
         />
       )}
       <footer>
-        <span className={classes.poweredBy}>Powered by {PoweredBy.map(({name, href}, i) => (<span key={`powered_by_${i}`}><a target="_blank" href={href}>{name}</a>{i === PoweredBy.length - 1 ? '' :  i === PoweredBy.length - 2 ? ', and ' : ', '}</span>))}</span>
+        <span className={classes.poweredBy}>
+          Powered by{' '}
+          {PoweredBy.map(({ name, href }, i) => (
+            <span key={`powered_by_${i}`}>
+              <a target="_blank" href={href}>
+                {name}
+              </a>
+              {i === PoweredBy.length - 1
+                ? ''
+                : i === PoweredBy.length - 2
+                ? ', and '
+                : ', '}
+            </span>
+          ))}
+        </span>
       </footer>
     </div>
   )
