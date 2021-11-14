@@ -9,6 +9,7 @@ const cardano = require('./cardano')
 const algorand = require('./algorand')
 const stellar = require('./stellar')
 const doge = require('./doge')
+const polkadot = require('./polkadot')
 
 var jobInterval
 
@@ -114,6 +115,14 @@ const scrapeWallet = async (name, address, addToCoinMarketCapJobs) => {
         await stellar(address)
       } catch(err) {
         console.log('Error scraping stellar', err)
+      }
+      break
+    case 'polkadot':
+      await handleCoinMarketCapCoin(name)
+      try {
+        await polkadot(address)
+      } catch(err) {
+        console.log('Error scraping polkadot', err)
       }
       break
     case 'dogecoin':
