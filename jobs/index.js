@@ -79,6 +79,9 @@ const scrapeWallet = async (name, address, addToCoinMarketCapJobs) => {
     case 'beam':
       await handleCoinMarketCapCoin(name)
       break
+    case 'xrp':
+      await handleCoinMarketCapCoin(name)
+      break
     case 'conceal':
       await handleCoinMarketCapCoin(name)
       break
