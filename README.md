@@ -9,7 +9,7 @@ Install [docker](https://docs.docker.com/get-docker/) and [docker-compose](https
 Add this useful alias for `docker-compose` so you don't have to type it all out every time
 #### Permanent
 ```bash
-echo "alias dc=\"docker-compose\" >> ~/.bashrc"
+echo "alias dc=\"docker-compose\"" >> ~/.bashrc
 source ~/.bashrc
 ```
 
